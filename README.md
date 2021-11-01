@@ -6,7 +6,7 @@ Base smart-contracts for a DAO to derive their:
 - Pre-market Liquidity Building contracts using a UniSwap Liquidity Pool
 - Development Treasury contracts using DAO and LP tokens
 
-## This is a Hardhat Project
+## This is a hardhat project
 
 Try running some of the following tasks:
 
@@ -29,7 +29,7 @@ npx solhint 'contracts/**/*.sol'
 npx solhint 'contracts/**/*.sol' --fix
 ```
 
-# Etherscan verification
+### Etherscan verification
 
 To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
 
