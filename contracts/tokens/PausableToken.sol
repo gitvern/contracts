@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @custom:security-contact security@gitvern.org
-contract DAOToken is ERC20, Pausable, Ownable {
+contract PausableToken is ERC20, Pausable, Ownable {
     constructor(uint256 supply) ERC20("DAO Token", "DAO") {
         _mint(msg.sender, supply);
     }
