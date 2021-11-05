@@ -14,6 +14,8 @@ Token deployed to: [`0xC74496BcdCFdf69564d9f810832F7553Ff22696d`](https://rinkeb
 
 Treasury deployed to: [`0xaF4F12d94fb34220f15b72f41b2c6f74f8F836fd`](https://rinkeby.etherscan.io/address/0xaF4F12d94fb34220f15b72f41b2c6f74f8F836fd)
 
+Uniswap Liquidity Pool DAO/ETH at: [`0x3A2315fC6B4ABD766aCaAB0591cecAAB0c54c795`](https://rinkeby.etherscan.io/address/0x3a2315fc6b4abd766acaab0591cecaab0c54c795)
+
 ## This is a hardhat project
 
 Try running some of the following tasks:
