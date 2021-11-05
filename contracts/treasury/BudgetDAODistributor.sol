@@ -13,7 +13,7 @@ contract BudgetDAODistributor is Pausable, Ownable {
     event RewardsReversed(address indexed contributor, uint256 weiAmount);
     event RewardsReleased(address indexed contributor, uint256 weiAmount);
 
-    IERC20 private _token;
+    address private _token;
     address private _manager;
     mapping(address => uint256) private _rewards;
     uint256 private _assigned;
@@ -22,7 +22,7 @@ contract BudgetDAODistributor is Pausable, Ownable {
 
     constructor(address token) {
         require(token != address(0), "Need to supply a valid token address");
-        _token = IERC20(token);
+        _token = token;
         _assignManager(msg.sender);
     }
 
@@ -35,14 +35,14 @@ contract BudgetDAODistributor is Pausable, Ownable {
     }
 
     function availableBudget() public view returns (uint256) {
-        return _token.balanceOf(address(this)) - _assigned;
+        return IERC20(_token).balanceOf(address(this)) - _assigned;
     }
 
     function withdraw(address payable wallet) public onlyOwner {
         uint256 balance = availableBudget();
-        require(balance > 0 && balance <= _token.balanceOf(address(this)), "No withdrawable balance");
+        require(balance > 0 && balance <= IERC20(_token).balanceOf(address(this)), "No withdrawable balance");
 
-        require(_token.transfer(wallet, balance), "Withdrawal transfer failed");
+        require(IERC20(_token).transfer(wallet, balance), "Withdrawal transfer failed");
 
         emit BudgetWithdrawn(wallet, balance);
     }
@@ -105,7 +105,7 @@ contract BudgetDAODistributor is Pausable, Ownable {
         _assigned -= weiAmount;
         _released += weiAmount;
 
-        require(_token.transfer(contributor, weiAmount), "Rewards release transfer failed");
+        require(IERC20(_token).transfer(contributor, weiAmount), "Rewards release transfer failed");
 
         emit RewardsReleased(contributor, weiAmount);
     }
