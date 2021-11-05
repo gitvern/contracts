@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @custom:security-contact security@gitvern.org
 contract DAOToken is ERC20, Pausable, Ownable {
-    constructor() ERC20("DAO Token", "DAO") {
-        _mint(msg.sender, 1000000 * 10 ** decimals());
+    constructor(uint256 supply) ERC20("DAO Token", "DAO") {
+        _mint(msg.sender, supply);
     }
 
     function pause() public onlyOwner {
