@@ -3,23 +3,19 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @custom:security-contact security@gitvern.org
-contract PausableToken is ERC20, Pausable, AccessControl {
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-
-    constructor() ERC20("XYZ Token", "XYZ") {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(PAUSER_ROLE, msg.sender);
+contract DAOToken is ERC20, Pausable, Ownable {
+    constructor() ERC20("DAO Token", "DAO") {
         _mint(msg.sender, 1000000 * 10 ** decimals());
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyOwner {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyOwner {
         _unpause();
     }
 
