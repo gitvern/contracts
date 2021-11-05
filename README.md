@@ -12,7 +12,7 @@ Base smart-contracts for a DAO to derive theirs:
 
 Token deployed to: `0xC74496BcdCFdf69564d9f810832F7553Ff22696d`
 
-Treasury deployed to: `0xaF4F12d94fb34220f15b72f41b2c6f74f8F836fd`
+Treasury deployed to: [`0xaF4F12d94fb34220f15b72f41b2c6f74f8F836fd`](https://rinkeby.etherscan.io/address/0xaF4F12d94fb34220f15b72f41b2c6f74f8F836fd)
 
 ## This is a hardhat project
 
