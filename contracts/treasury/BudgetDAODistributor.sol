@@ -2,11 +2,13 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @custom:security-contact security@gitvern.org
 contract BudgetDAODistributor is Pausable, Ownable {
+    using SafeERC20 for IERC20;
 
     event BudgetWithdrawn(address indexed to, uint256 weiAmount);
     event RewardsAssigned(address indexed contributor, uint256 weiAmount);
@@ -42,7 +44,8 @@ contract BudgetDAODistributor is Pausable, Ownable {
         uint256 balance = availableBudget();
         require(balance > 0 && balance <= IERC20(_token).balanceOf(address(this)), "No withdrawable balance");
 
-        require(IERC20(_token).transfer(wallet, balance), "Withdrawal transfer failed");
+        // require(IERC20(_token).transfer(wallet, balance), "Withdrawal transfer failed");
+        IERC20(_token).safeTransfer(wallet, balance);
 
         emit BudgetWithdrawn(wallet, balance);
     }
@@ -105,7 +108,8 @@ contract BudgetDAODistributor is Pausable, Ownable {
         _assigned -= weiAmount;
         _released += weiAmount;
 
-        require(IERC20(_token).transfer(contributor, weiAmount), "Rewards release transfer failed");
+        // require(IERC20(_token).transfer(contributor, weiAmount), "Rewards release transfer failed");
+        IERC20(_token).safeTransfer(contributor, weiAmount);
 
         emit RewardsReleased(contributor, weiAmount);
     }
