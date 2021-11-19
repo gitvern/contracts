@@ -22,9 +22,9 @@ contract BudgetDAODistributor is Pausable, Ownable {
     uint256 private _released;
 
 
-    constructor(address token) {
-        require(token != address(0), "Invalid token address");
-        _token = token;
+    constructor(address budgetToken) {
+        require(budgetToken != address(0), "Invalid budget token address");
+        _token = budgetToken;
         _assignManager(msg.sender);
     }
 
