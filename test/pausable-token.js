@@ -4,13 +4,13 @@ const { ethers } = require("hardhat");
 describe("PausableToken", () => {
   let owner, addr1, PausableToken, token;
 
-  const initialSupply = ethers.utils.parseEther("1000000");
+  const totalSupply = ethers.utils.parseEther("1000000");
 
   before(async () => {
     [owner, addr1] = await ethers.getSigners();
 
     PausableToken = await ethers.getContractFactory("PausableToken");
-    token = await PausableToken.deploy(initialSupply);
+    token = await PausableToken.deploy(totalSupply);
     await token.deployed();
   });
 
@@ -27,11 +27,11 @@ describe("PausableToken", () => {
   });
 
   it("Should have a correct total supply", async () => {
-    await expect(await token.totalSupply()).to.equal(initialSupply);
+    await expect(await token.totalSupply()).to.equal(totalSupply);
   });
 
   it("Should have all supply allocated to owner", async () => {
-    await expect(await token.balanceOf(owner.address)).to.equal(initialSupply);
+    await expect(await token.balanceOf(owner.address)).to.equal(totalSupply);
   });
 
   it("Others shouldn't be able to pause token transfers", async () => {

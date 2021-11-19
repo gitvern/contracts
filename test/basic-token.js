@@ -4,13 +4,13 @@ const { ethers } = require("hardhat");
 describe("BasicToken", () => {
   let owner, addr1, BasicToken, token;
 
-  const initialSupply = ethers.utils.parseEther('1000000');
+  const totalSupply = ethers.utils.parseEther('1000000');
 
   before(async () => {
     [owner, addr1] = await ethers.getSigners();
 
     BasicToken = await ethers.getContractFactory('BasicToken');
-    token = await BasicToken.deploy(initialSupply);
+    token = await BasicToken.deploy(totalSupply);
     await token.deployed();
   });
 
@@ -27,11 +27,11 @@ describe("BasicToken", () => {
   });
 
   it("Should have a correct total supply", async () => {
-    await expect(await token.totalSupply()).to.equal(initialSupply);
+    await expect(await token.totalSupply()).to.equal(totalSupply);
   });
 
   it("Should have all supply allocated to owner", async () => {
-    await expect(await token.balanceOf(owner.address)).to.equal(initialSupply);
+    await expect(await token.balanceOf(owner.address)).to.equal(totalSupply);
   });
 
   it("Should be able to transfer tokens to another account", async () => {
