@@ -15,23 +15,23 @@ describe("BasicToken", () => {
   });
 
   it("Should have correct name", async () => {
-    await expect(await token.name()).to.equal('DAO Token');
+    expect(await token.name()).to.equal('DAO Token');
   });
 
   it("Should have correct symbol", async () => {
-    await expect(await token.symbol()).to.equal('DAO');
+    expect(await token.symbol()).to.equal('DAO');
   });
 
   it("Should have 18 decimals", async () => {
-    await expect(await token.decimals()).to.equal(18);
+    expect(await token.decimals()).to.equal(18);
   });
 
   it("Should have a correct total supply", async () => {
-    await expect(await token.totalSupply()).to.equal(totalSupply);
+    expect(await token.totalSupply()).to.equal(totalSupply);
   });
 
   it("Should have all supply allocated to owner", async () => {
-    await expect(await token.balanceOf(owner.address)).to.equal(totalSupply);
+    expect(await token.balanceOf(owner.address)).to.equal(totalSupply);
   });
 
   it("Should be able to transfer tokens to another account", async () => {
