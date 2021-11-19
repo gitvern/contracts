@@ -50,7 +50,7 @@ contract BudgetETHDistributor is Pausable, Ownable {
     }
 
     function assignManager(address newManager) public onlyOwner {
-        require(newManager != address(0), "Cannot assign manager to the zero address");
+        require(newManager != address(0), "Invalid manager address");
         _assignManager(newManager);
     }
 
@@ -63,7 +63,7 @@ contract BudgetETHDistributor is Pausable, Ownable {
     }
 
     modifier onlyManager() {
-        require(manager() == msg.sender, "Caller is not the assigned manager");
+        require(manager() == msg.sender, "Not the assigned manager");
         _;
     }
 
