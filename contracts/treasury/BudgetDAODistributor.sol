@@ -23,7 +23,7 @@ contract BudgetDAODistributor is Pausable, Ownable {
 
 
     constructor(address token) {
-        require(token != address(0), "Need to supply a valid token address");
+        require(token != address(0), "Invalid token address");
         _token = token;
         _assignManager(msg.sender);
     }
@@ -34,6 +34,10 @@ contract BudgetDAODistributor is Pausable, Ownable {
 
     function unpause() public onlyOwner {
         _unpause();
+    }
+
+    function token() public view returns (address) {
+        return _token;
     }
 
     function availableBudget() public view returns (uint256) {
@@ -51,7 +55,7 @@ contract BudgetDAODistributor is Pausable, Ownable {
     }
 
     function assignManager(address newManager) public onlyOwner {
-        require(newManager != address(0), "Cannot assign manager to the zero address");
+        require(newManager != address(0), "Invalid manager address");
         _assignManager(newManager);
     }
 
@@ -64,7 +68,7 @@ contract BudgetDAODistributor is Pausable, Ownable {
     }
 
     modifier onlyManager() {
-        require(manager() == msg.sender, "Caller is not the assigned manager");
+        require(manager() == msg.sender, "Not the assigned manager");
         _;
     }
 
