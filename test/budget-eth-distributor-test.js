@@ -1,31 +1,20 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("BudgetDAODistributor", () => {
-  let owner, manager, contrib1, contrib2, PausableToken, token, BudgetDAODistributor, treasury;
+describe("BudgetETHDistributor", () => {
+  let owner, manager, contrib1, contrib2, provider, BudgetETHDistributor, treasury;
 
-  const totalSupply = ethers.utils.parseEther("1000000");
-  const testBudget = ethers.utils.parseEther("10000");
-  const testRewards = ethers.utils.parseEther("10");
+  const testBudget = ethers.utils.parseEther("50");
+  const testRewards = ethers.utils.parseEther("1");
 
   before(async () => {
     [owner, manager, contrib1, contrib2] = await ethers.getSigners();
+    
+    provider = owner.provider;
 
-    PausableToken = await ethers.getContractFactory("PausableToken");
-    token = await PausableToken.deploy(totalSupply);
-    await token.deployed();
-
-    BudgetDAODistributor = await ethers.getContractFactory("BudgetDAODistributor");
-    treasury = await BudgetDAODistributor.deploy(token.address);
+    BudgetETHDistributor = await ethers.getContractFactory("BudgetETHDistributor");
+    treasury = await BudgetETHDistributor.deploy();
     await treasury.deployed();
-  });
-
-  it("Should fail deploy if passed an invalid budget token address", async () => {
-    expect(BudgetDAODistributor.deploy("0x0000000000000000000000000000000000000000")).to.be.revertedWith("Invalid budget token address");
-  });
-
-  it("Should have correct token", async () => {
-    expect(await treasury.token()).to.equal(token.address);
   });
 
   it("Should have no budget", async () => {
@@ -52,9 +41,8 @@ describe("BudgetDAODistributor", () => {
   });
 
   it("Should be able to receive a rewards budget", async () => {
-    await expect(token.transfer(treasury.address, testBudget)).to.be.ok;
+    await expect(await owner.sendTransaction({to: treasury.address, value: testBudget})).to.changeEtherBalances([owner, treasury], [testBudget.mul(-1), testBudget]);
     await expect(await treasury.availableBudget()).to.equal(testBudget);
-    await expect(await token.balanceOf(treasury.address)).to.equal(testBudget);
   });
 
   it("Should only allow the manager to assign rewards", async () => {
@@ -63,7 +51,7 @@ describe("BudgetDAODistributor", () => {
     await expect(await treasury.connect(manager).assign(contrib1.address, testRewards)).to.emit(treasury, "RewardsAssigned").withArgs(contrib1.address, testRewards);
     await expect(await treasury.rewardsAssigned()).to.equal(testRewards);
     await expect(await treasury.availableBudget()).to.equal(testBudget.sub(testRewards));
-    await expect(await token.balanceOf(treasury.address)).to.equal(testBudget);
+    await expect(await provider.getBalance(treasury.address)).to.equal(testBudget);
   });
 
   it("Anyone should be able to examine the rewards assigned to a contributor", async () => {
@@ -79,7 +67,7 @@ describe("BudgetDAODistributor", () => {
     await expect(await treasury.rewardsOf(contrib1.address)).to.equal(testRewards.mul(2));
     await expect(await treasury.rewardsAssigned()).to.equal(testRewards.mul(2));
     await expect(await treasury.availableBudget()).to.equal(testBudget.sub(testRewards.mul(2)));
-    await expect(await token.balanceOf(treasury.address)).to.equal(testBudget);
+    await expect(await provider.getBalance(treasury.address)).to.equal(testBudget);
   });
 
   it("Manager should be able to assign rewards to a different contributor as well", async () => {
@@ -88,7 +76,7 @@ describe("BudgetDAODistributor", () => {
     await expect(await treasury.rewardsOf(contrib2.address)).to.equal(testRewards);
     await expect(await treasury.rewardsAssigned()).to.equal(testRewards.mul(3));
     await expect(await treasury.availableBudget()).to.equal(testBudget.sub(testRewards.mul(3)));
-    await expect(await token.balanceOf(treasury.address)).to.equal(testBudget);
+    await expect(await provider.getBalance(treasury.address)).to.equal(testBudget);
   });
 
   it("Should only allow the manager to reverse assigned rewards to a contributor", async () => {
@@ -100,7 +88,7 @@ describe("BudgetDAODistributor", () => {
     await expect(await treasury.rewardsOf(contrib2.address)).to.equal(0);
     await expect(await treasury.rewardsAssigned()).to.equal(testRewards);
     await expect(await treasury.availableBudget()).to.equal(testBudget.sub(testRewards));
-    await expect(await token.balanceOf(treasury.address)).to.equal(testBudget);
+    await expect(await provider.getBalance(treasury.address)).to.equal(testBudget);
   });
 
   it("Manager shouldn't be able to reverse more than the assigned rewards to a contributor", async () => {
@@ -115,8 +103,7 @@ describe("BudgetDAODistributor", () => {
     await expect(await treasury.rewardsAssigned()).to.equal(0);
     await expect(await treasury.rewardsReleased()).to.equal(testRewards);
     await expect(await treasury.availableBudget()).to.equal(testBudget.sub(testRewards));
-    await expect(await token.balanceOf(treasury.address)).to.equal(testBudget.sub(testRewards));
-    await expect(await token.balanceOf(contrib1.address)).to.equal(testRewards);
+    await expect(await provider.getBalance(treasury.address)).to.equal(testBudget.sub(testRewards));
   });
 
   it("Manager shouldn't be able to release invalid reward amounts", async () => {
@@ -134,9 +121,7 @@ describe("BudgetDAODistributor", () => {
     await expect(treasury.connect(contrib1).withdraw(manager.address)).to.be.revertedWith("Ownable: caller is not the owner");
     await expect(await treasury.withdraw(owner.address)).to.emit(treasury, "BudgetWithdrawn").withArgs(owner.address, testBudget.sub(testRewards));
     await expect(await treasury.availableBudget()).to.equal(0);
-    await expect(await token.balanceOf(treasury.address)).to.equal(0);
-    await expect(await token.balanceOf(owner.address)).to.equal(totalSupply.sub(testRewards));
-    await expect(await token.balanceOf(contrib1.address)).to.equal(testRewards);
+    await expect(await provider.getBalance(treasury.address)).to.equal(0);
   });
 
   it("Should only allow owner to pause the contract", async () => {
